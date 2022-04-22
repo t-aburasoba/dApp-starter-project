@@ -1,27 +1,21 @@
+// App.js
 import React, { useEffect, useState } from "react";
 import "./App.css";
 /* ethers 変数を使えるようにする*/
 import { ethers } from "ethers";
-/* ABIファイルを含むWavePortal.jsonファイルをインポートする*/
 import abi from "./utils/WavePortal.json";
-const App = () => {
-  /*
-   * ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
-   */
-  const [currentAccount, setCurrentAccount] = useState("");
-  console.log("currentAccount: ", currentAccount);
-  /**
-   * デプロイされたコントラクトのアドレスを保持する変数を作成
-   */
-  const contractAddress = "0x42Ff30c9Fc4C1901f199D580daE8A88f00312A0E";
-  /**
-   * ABIの内容を参照する変数を作成
-   */
-  const contractABI = abi.abi;
 
-  /*
-   * window.ethereumにアクセスできることを確認します。
-   */
+const App = () => {
+  // ユーザーのパブリックウォレットを保存するために使用する状態変数を定義します。
+  const [currentAccount, setCurrentAccount] = useState("");
+
+  console.log("currentAccount: ", currentAccount);
+
+  const contractAddress = "0x7A2d435D44BAD00D19B530c82b6dc9462Ea8224a";
+
+  const contractABI = abi.abi
+
+  // window.ethereumにアクセスできることを確認します。
   const checkIfWalletIsConnected = async () => {
     try {
       const { ethereum } = window;
@@ -31,9 +25,7 @@ const App = () => {
       } else {
         console.log("We have the ethereum object", ethereum);
       }
-      /*
-       * ユーザーのウォレットへのアクセスが許可されているかどうかを確認します。
-       */
+      // ユーザーのウォレットへのアクセスが許可されているかどうかを確認します。
       const accounts = await ethereum.request({ method: "eth_accounts" });
       if (accounts.length !== 0) {
         const account = accounts[0];
@@ -46,9 +38,7 @@ const App = () => {
       console.log(error);
     }
   };
-  /*
-   * connectWalletメソッドを実装
-   */
+  // connectWalletメソッドを実装
   const connectWallet = async () => {
     try {
       const { ethereum } = window;
@@ -65,18 +55,13 @@ const App = () => {
       console.log(error);
     }
   };
-  /*
-   * waveの回数をカウントする関数を実装
-   */
+  // waveの回数をカウントする関数を実装
   const wave = async () => {
     try {
       const { ethereum } = window;
       if (ethereum) {
         const provider = new ethers.providers.Web3Provider(ethereum);
         const signer = provider.getSigner();
-        /*
-         * ABIを参照
-         */
         const wavePortalContract = new ethers.Contract(
             contractAddress,
             contractABI,
@@ -84,15 +69,11 @@ const App = () => {
         );
         let count = await wavePortalContract.getTotalWaves();
         console.log("Retrieved total wave count...", count.toNumber());
-        /*
-         * コントラクトに👋（wave）を書き込む。
-         */
-        const waveTxn = await wavePortalContract.wave();
-        console.log("Mining...", waveTxn.hash);
-        await waveTxn.wait();
-        console.log("Mined -- ", waveTxn.hash);
-        count = await wavePortalContract.getTotalWaves();
-        console.log("Retrieved total wave count...", count.toNumber());
+
+        const waveTxn = await wavePortalContract.wave()
+        await waveTxn.wait()
+        count = await wavePortalContract.getTotalWaves()
+        console.log("Retrieved total wave count...", count.toNumber())
       } else {
         console.log("Ethereum object doesn't exist!");
       }
@@ -100,10 +81,7 @@ const App = () => {
       console.log(error);
     }
   };
-
-  /*
-   * WEBページがロードされたときに下記の関数を実行します。
-   */
+  // WEBページがロードされたときに下記の関数を実行します。
   useEffect(() => {
     checkIfWalletIsConnected();
   }, []);
@@ -126,15 +104,11 @@ const App = () => {
             ✨
           </span>
           </div>
-          {/*
-         * waveボタンにwave関数を連動させる。
-         */}
+          {/* waveボタンにwave関数を連動させる。*/}
           <button className="waveButton" onClick={wave}>
             Wave at Me
           </button>
-          {/*
-         * ウォレットコネクトのボタンを実装
-         */}
+          {/* ウォレットコネクトのボタンを実装 */}
           {!currentAccount && (
               <button className="waveButton" onClick={connectWallet}>
                 Connect Wallet
